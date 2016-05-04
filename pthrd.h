@@ -27,7 +27,7 @@ protected:
 public:
     pthread_t pthread;// object of type Pthread
 
-    int Start(int prio);//Function to start the thread process
+    int Start(int prio, bool detach = false);//Function to start the thread process
     Pthrd();// Constructor
 };
 

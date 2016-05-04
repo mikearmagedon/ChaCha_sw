@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
         cerr << "\nM:Couldn't' create" << endl;
         exit (0);
     }
-    if(proc.Start(3))
+    if(proc.Start(3, true))
     {
         cerr << "\nM:Couldn't' create" << endl;
         exit (0);

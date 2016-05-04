@@ -26,7 +26,7 @@ void Pthrd::CheckFail(int status)
 }
 
 
-int Pthrd::Start(int prio)
+int Pthrd::Start(int prio, bool detach)
 {
     pthread_attr_init(&thread_attr);
     pthread_attr_getschedpolicy(&thread_attr, &thread_policy);
@@ -38,7 +38,8 @@ int Pthrd::Start(int prio)
 
     std::cout << "\nPriority: " << thread_param.__sched_priority << std::endl;
     CheckFail(rtn);
-    //pthread_detach(pthread);
+    if (detach)
+        pthread_detach(pthread);
     return rtn;
 }
 
