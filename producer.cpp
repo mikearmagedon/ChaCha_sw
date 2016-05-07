@@ -1,8 +1,7 @@
 #include "producer.h"
 
-Producer::Producer(const char * filename)
+Producer::Producer()
 {
-    this->filename = filename; //filename
     this->attr.mq_maxmsg = 20; //max # of messages
     this->attr.mq_msgsize = sizeof(msg_prod); //Max size of message
     queue_prod = mq_open(QPROD_NAME , O_CREAT, S_IRWXU | S_IRWXG, &(this->attr));
@@ -25,6 +24,14 @@ Producer::~Producer()
     }
 }
 
+void Producer::set_filename(const char * filename) {
+    this->filename = filename;
+}
+
+const char Producer::get_filename() {
+    return *(this->filename);
+}
+
 void Producer::run()
 {
     int position=0;
@@ -39,11 +46,12 @@ void Producer::run()
 
     memset(msg_prod.bytes,'\0',sizeof(char)*sizeof(msg_prod.bytes));
     ifstream fp;
-#if DECRYPT
-    fp.open("cypher.txt", ifstream::in);
-#else
+//#if DECRYPT
+//    //strcat(filename, ".rslt");
+//    fp.open("sample_32.txt.rslt", ifstream::in);
+//#else
     fp.open(filename, ifstream::in);
-#endif
+//#endif
     if (!fp){
         std::cout << "\nP:Could not open file" << std::endl;
         exit(0);
@@ -59,6 +67,8 @@ void Producer::run()
         fp.read(reinterpret_cast<char*>(&msg_prod.bytes), sizeof(msg_prod.bytes)-1);
 
         cout << "\nP:msg_prod " << msg_prod.bytes << endl;
+        msg_prod.numb_bytes_read=fp.gcount();
+        cout << "\nP:sizeof(msg_prod) " << sizeof(msg_prod) << endl;
         int err = mq_send(queue_prod,reinterpret_cast<const char*>(&msg_prod),sizeof(msg_prod),0);
         if (err < 0)
             cerr << "\nP:mq_send " << strerror(errno) << endl;

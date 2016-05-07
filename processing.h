@@ -27,6 +27,7 @@ using namespace std;
 struct buff_message_processing
 {
     uint8_t bytes[65];
+    int numb_bytes_read;
 };
 
 class Processing: public Pthrd

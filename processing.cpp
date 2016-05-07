@@ -66,10 +66,9 @@ void Processing::run(){
 
 
     //chacha.crypt(&temp_msg_pross.bytes[0], temp_msg_pross.bytes.size());
-    chacha.crypt(&msg_pross.bytes[0], sizeof(msg_pross.bytes));
+    chacha.crypt(&msg_pross.bytes[0], msg_pross.numb_bytes_read);
 
-    cout << "\nPro:msg_pross post crypt" << msg_pross.bytes << endl;
-    sleep(10);
+    cout << "\nPro:msg_pross post crypt " << msg_pross.bytes << endl;
     queue_cons_proc = mq_open(QCONS_NAME , O_RDWR);
 
     if(queue_cons_proc == (mqd_t)-1)
@@ -83,26 +82,3 @@ void Processing::run(){
     cout<<"\nPro:Processing over"<<endl;
     while(1);
 }
-
-//Bytes Processing::load_file(const char *path){
-//    ifstream fp;
-//    fp.open(path, ifstream::in);
-//    if (!fp){
-//        std::cout << "Could not open file " << path << std::endl;
-//        exit(0);
-//    }
-//    fp.seekg(0, fp.end);
-//    size_t n = fp.tellg();
-//    fp.seekg(0, fp.beg);
-//    Bytes bytes(n);
-//    fp.read(reinterpret_cast<char*>(&bytes[0]), n);
-//    fp.close();
-//    return bytes;
-//}
-
-//void Processing::save_file(const char *path, const Bytes &bytes){
-//    ofstream fp;
-//    fp.open(path, ofstream::out | ofstream::app);
-//    fp.write(reinterpret_cast<const char*>(&bytes[0]),bytes.size());
-//    fp.close();
-//}

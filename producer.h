@@ -23,6 +23,7 @@ using namespace std;
 struct buff_message
 {
     uint8_t bytes[65];
+    int numb_bytes_read;
 };
 
 
@@ -35,8 +36,10 @@ private:
     buff_message msg_prod;
     struct mq_attr attr;
 public:
-    Producer(const char *);//Constructor
+    Producer();//Constructor
     ~Producer();
+    void set_filename(const char *);
+    const char get_filename();
     void run(void);// runnable function
     int load_file(const char *path, buff_message &);
 };
