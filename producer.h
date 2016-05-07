@@ -23,7 +23,6 @@ using namespace std;
 struct buff_message
 {
     uint8_t bytes[65];
-    //char bytes[24];
 };
 
 
@@ -31,11 +30,12 @@ struct buff_message
 class Producer: public Pthrd
 {
 private:
+    const char * filename;
     mqd_t queue_prod;
     buff_message msg_prod;
     struct mq_attr attr;
 public:
-    Producer();//Constructor
+    Producer(const char *);//Constructor
     ~Producer();
     void run(void);// runnable function
     int load_file(const char *path, buff_message &);

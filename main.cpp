@@ -15,13 +15,11 @@
 
 int main(int argc, char *argv[])
 {
-    //QCoreApplication a(argc, argv);
-
-    Producer prod;
-    Consumer cons;
+    Producer prod("sample_32.txt");
+    Consumer cons("cypher.txt");
     Processing proc;
 
-    if(cons.Start(2))
+    if(cons.Start(1))
     {
         cerr << "\nM:Couldn't' create" << endl;
         exit (0);
@@ -31,7 +29,7 @@ int main(int argc, char *argv[])
         cerr << "\nM:Couldn't' create" << endl;
         exit (0);
     }
-    if(proc.Start(3, true))
+    if(proc.Start(1, true))
     {
         cerr << "\nM:Couldn't' create" << endl;
         exit (0);
@@ -46,7 +44,6 @@ int main(int argc, char *argv[])
     pthread_join(cons.pthread, 0);
 
     cout << "\nM:Exiting..." << endl;
-    //pthread_exit(NULL);
-    //return a.exec();
+    exit(0);
 }
 

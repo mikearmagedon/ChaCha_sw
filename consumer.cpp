@@ -1,7 +1,8 @@
 #include "consumer.h"
 
-Consumer::Consumer()
+Consumer::Consumer(const char * filename)
 {
+    this->filename = filename; //filename
     this->attr.mq_maxmsg = 20; //max # of messages
     this->attr.mq_msgsize = sizeof(msg_cons); //Max size of message
 
@@ -49,11 +50,9 @@ void Consumer::run()
 #if DECRYPT
     save_file("plain.txt",msg_cons);
 #else
-    save_file("cypher.txt", msg_cons);
+    save_file(filename, msg_cons);
 #endif
-    //while(1);
 }
-
 
 void Consumer::save_file(const char *path, const buff_message_cons &src_msg){
     ofstream fp;

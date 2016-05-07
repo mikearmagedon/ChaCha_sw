@@ -27,13 +27,14 @@ struct buff_message_cons
 class Consumer: public Pthrd
 {
 private:
+    const char * filename;
     buff_message_cons msg_cons;
     mqd_t queue_cons;
     int msg_con_int;
     struct mq_attr attr;
     unsigned int sender;
 public:
-    Consumer();//Constructor
+    Consumer(const char *);//Constructor
     ~Consumer();
     void run(void);
     void save_file(const char *, const buff_message_cons &);

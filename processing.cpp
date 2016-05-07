@@ -9,14 +9,14 @@ Processing::Processing()
 Processing::~Processing()
 {
     cout << "Pro:~Processing" << endl;
-//    if (mq_unlink(QPROD_NAME) == -1) {
-//        cerr << "\nP:mq_unlink" << strerror(errno) << endl;
-//        exit(1);
-//    }
-//    if (mq_unlink(QCONS_NAME) == -1) {
-//        cerr << "\nC:mq_unlink" << strerror(errno) << endl;
-//        exit(1);
-//    }
+    //    if (mq_unlink(QPROD_NAME) == -1) {
+    //        cerr << "\nP:mq_unlink" << strerror(errno) << endl;
+    //        exit(1);
+    //    }
+    //    if (mq_unlink(QCONS_NAME) == -1) {
+    //        cerr << "\nC:mq_unlink" << strerror(errno) << endl;
+    //        exit(1);
+    //    }
 }
 
 void Processing::run(){

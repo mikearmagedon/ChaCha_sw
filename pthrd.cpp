@@ -47,13 +47,13 @@ int Pthrd::Start(int prio, bool detach)
 void Pthrd::SetupThread(int prio, pthread_attr_t *pthread_attr, struct sched_param * pthread_param)
 {
 
-//    int rr_min_priority, rr_max_priority;
+    //    int rr_min_priority, rr_max_priority;
 
-//    //Step 2: Retirve max and min priority
-//    rr_min_priority = sched_get_priority_min(SCHED_RR);
-//    rr_max_priority = sched_get_priority_max(SCHED_RR);
+    //    //Step 2: Retirve max and min priority
+    //    rr_min_priority = sched_get_priority_min(SCHED_RR);
+    //    rr_max_priority = sched_get_priority_max(SCHED_RR);
 
-//    std::cout << "MAX: " << rr_max_priority << " MIN: " << rr_min_priority << std::endl;
+    //    std::cout << "MAX: " << rr_max_priority << " MIN: " << rr_min_priority << std::endl;
 
     // Step 3: Calculate and/or assign priority value to sched_param structure
     pthread_param-> sched_priority = prio;

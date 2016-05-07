@@ -27,10 +27,10 @@ uint32_t Chacha20Block::rotl32(uint32_t x, int n){
 
 uint32_t Chacha20Block::pack4(const uint8_t *a){
     return
-        uint32_t(a[0] << 0*8) |
-        uint32_t(a[1] << 1*8) |
-        uint32_t(a[2] << 2*8) |
-        uint32_t(a[3] << 3*8);
+            uint32_t(a[0] << 0*8) |
+            uint32_t(a[1] << 1*8) |
+            uint32_t(a[2] << 2*8) |
+            uint32_t(a[3] << 3*8);
 }
 
 void Chacha20Block::unpack4(uint32_t src, uint8_t *dst){
@@ -53,20 +53,20 @@ void Chacha20Block::next(uint32_t result[16]){
     for (int i = 0; i < 16; i++) result[i] = state[i];
 
 #define CHACHA20_QUARTERROUND(x, a, b, c, d) \
-x[a] += x[b]; x[d] = rotl32(x[d] ^ x[a], 16); \
-x[c] += x[d]; x[b] = rotl32(x[b] ^ x[c], 12); \
-x[a] += x[b]; x[d] = rotl32(x[d] ^ x[a], 8); \
-x[c] += x[d]; x[b] = rotl32(x[b] ^ x[c], 7);
+    x[a] += x[b]; x[d] = rotl32(x[d] ^ x[a], 16); \
+    x[c] += x[d]; x[b] = rotl32(x[b] ^ x[c], 12); \
+    x[a] += x[b]; x[d] = rotl32(x[d] ^ x[a], 8); \
+    x[c] += x[d]; x[b] = rotl32(x[b] ^ x[c], 7);
 
     for (int i = 0; i < 10; i++){
         CHACHA20_QUARTERROUND(result, 0, 4, 8, 12)
-        CHACHA20_QUARTERROUND(result, 1, 5, 9, 13)
-        CHACHA20_QUARTERROUND(result, 2, 6, 10, 14)
-        CHACHA20_QUARTERROUND(result, 3, 7, 11, 15)
-        CHACHA20_QUARTERROUND(result, 0, 5, 10, 15)
-        CHACHA20_QUARTERROUND(result, 1, 6, 11, 12)
-        CHACHA20_QUARTERROUND(result, 2, 7, 8, 13)
-        CHACHA20_QUARTERROUND(result, 3, 4, 9, 14)
+                CHACHA20_QUARTERROUND(result, 1, 5, 9, 13)
+                CHACHA20_QUARTERROUND(result, 2, 6, 10, 14)
+                CHACHA20_QUARTERROUND(result, 3, 7, 11, 15)
+                CHACHA20_QUARTERROUND(result, 0, 5, 10, 15)
+                CHACHA20_QUARTERROUND(result, 1, 6, 11, 12)
+                CHACHA20_QUARTERROUND(result, 2, 7, 8, 13)
+                CHACHA20_QUARTERROUND(result, 3, 4, 9, 14)
     }
 
     for (int i = 0; i < 16; i++) result[i] += state[i];

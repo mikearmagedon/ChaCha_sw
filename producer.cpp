@@ -1,7 +1,8 @@
 #include "producer.h"
 
-Producer::Producer()
+Producer::Producer(const char * filename)
 {
+    this->filename = filename; //filename
     this->attr.mq_maxmsg = 20; //max # of messages
     this->attr.mq_msgsize = sizeof(msg_prod); //Max size of message
     queue_prod = mq_open(QPROD_NAME , O_CREAT, S_IRWXU | S_IRWXG, &(this->attr));
@@ -24,7 +25,6 @@ Producer::~Producer()
     }
 }
 
-
 void Producer::run()
 {
     int position=0;
@@ -42,7 +42,7 @@ void Producer::run()
 #if DECRYPT
     fp.open("cypher.txt", ifstream::in);
 #else
-    fp.open("sample_32.txt", ifstream::in);
+    fp.open(filename, ifstream::in);
 #endif
     if (!fp){
         std::cout << "\nP:Could not open file" << std::endl;
@@ -58,7 +58,6 @@ void Producer::run()
         }
         fp.read(reinterpret_cast<char*>(&msg_prod.bytes), sizeof(msg_prod.bytes)-1);
 
-
         cout << "\nP:msg_prod " << msg_prod.bytes << endl;
         int err = mq_send(queue_prod,reinterpret_cast<const char*>(&msg_prod),sizeof(msg_prod),0);
         if (err < 0)
@@ -70,40 +69,3 @@ void Producer::run()
     mq_close(queue_prod);
     cout<<"\nP:Producer over"<<endl;
 }
-
-//int Producer::load_file(const char *path, buff_message &dst_msg){
-//    memset(dst_msg.bytes,'\0',sizeof(char)*64);
-//    ifstream fp;
-//    fp.open(path, ifstream::in);
-//    if (!fp){
-//        std::cout << "\nP:Could not open file " << path << std::endl;
-//        exit(0);
-//    }
-//    fp.seekg(0, fp.end);
-//    size_t n = fp.tellg();
-//    fp.seekg(0, fp.beg);
-//    //Bytes bytes(n);
-//    fp.read(reinterpret_cast<char*>(&dst_msg.bytes[0]), n);
-//    fp.close();
-//    cout << "\nP:dst_msg " << dst_msg.bytes << endl;
-//    return 0; //TODO: return no. of read bytes
-//}
-
-//Bytes Producer::load_file(const char *path){
-//    ifstream fp;
-//    fp.open(path, ifstream::in);
-//    if (!fp){
-//        std::cout << "Could not open file " << path << std::endl;
-//        exit(0);
-//    }
-//    fp.seekg(0, fp.end);
-//    size_t n = fp.tellg();
-//    fp.seekg(0, fp.beg);
-//    Bytes bytes(n);
-//    fp.read(reinterpret_cast<char*>(&bytes[0]), n);
-//    fp.close();
-//    return bytes;
-//}
-
-
-
