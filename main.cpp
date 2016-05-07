@@ -35,11 +35,7 @@ int main(int argc, char *argv[])
         exit (0);
     }
 
-
-
-    //while(1);
     cout << "\nM:Waiting for threads to finish..." << endl;
-    //exit(0);
     pthread_join(prod.pthread, 0);
     pthread_join(cons.pthread, 0);
 
