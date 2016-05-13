@@ -4,7 +4,44 @@ Producer::Producer()
 {
     this->attr.mq_maxmsg = 20; //max # of messages
     this->attr.mq_msgsize = sizeof(msg_prod); //Max size of message
-    queue_prod = mq_open(QPROD_NAME , O_CREAT, S_IRWXU | S_IRWXG, &(this->attr));
+    this->ID = -1;
+    this->queue_name[20] = {0};
+}
+
+Producer::~Producer()
+{
+    cout << "\nP:~Producer" << endl;
+    if (mq_unlink(queue_name) == -1) {
+        cerr << "\nP:mq_unlink" << strerror(errno) << endl;
+        exit(1);
+    }
+}
+
+void Producer::set_ID(int id) {
+    this->ID = id;
+}
+
+void Producer::set_filename(const char * filename) {
+    this->filename = filename;
+}
+
+char Producer::get_filename() {
+    return *(this->filename);
+}
+
+void Producer::run()
+{
+    cout<<"\nP:Producer init"<<endl;
+
+    if (ID == -1) {
+        cout << "\nP:Invalid thread ID:" << ID << endl;
+        exit(1);
+    }
+
+    sprintf(queue_name, "/queue_prod%d", ID);
+    int position=0;
+
+    queue_prod = mq_open(queue_name, O_CREAT, S_IRWXU | S_IRWXG, &(this->attr));
 
     if(queue_prod == (mqd_t)-1)
     {
@@ -13,30 +50,8 @@ Producer::Producer()
     }
 
     mq_close(queue_prod);
-}
 
-Producer::~Producer()
-{
-    cout << "\nP:~Producer" << endl;
-    if (mq_unlink(QPROD_NAME) == -1) {
-        cerr << "\nP:mq_unlink" << strerror(errno) << endl;
-        exit(1);
-    }
-}
-
-void Producer::set_filename(const char * filename) {
-    this->filename = filename;
-}
-
-const char Producer::get_filename() {
-    return *(this->filename);
-}
-
-void Producer::run()
-{
-    int position=0;
-    cout<<"\nP:Producer init"<<endl;
-    queue_prod = mq_open(QPROD_NAME, O_RDWR);
+    queue_prod = mq_open(queue_name, O_RDWR);
 
     if(queue_prod == (mqd_t)-1)
     {
@@ -50,15 +65,21 @@ void Producer::run()
 //    //strcat(filename, ".rslt");
 //    fp.open("sample_32.txt.rslt", ifstream::in);
 //#else
-    fp.open(filename, ifstream::in);
+    fp.open(filename, ifstream::in | ios::binary);
 //#endif
     if (!fp){
-        std::cout << "\nP:Could not open file" << std::endl;
-        exit(0);
+        cerr << "\nP:Could not open file" << endl;
+        exit(1);
     }
     fp.seekg(0, fp.end);
     size_t n = fp.tellg();
     fp.seekg(0, fp.beg);
+    //float x = n/64.0;
+    int no_of_blks = ceil(n/64.0);
+#if DEBUG
+    cout << "no_of_blks " << no_of_blks << endl;
+#endif
+
     for (size_t i = 0; i < n; ){
         if (position >= 64){
             memset(msg_prod.bytes,'\0',sizeof(char)*sizeof(msg_prod.bytes));
@@ -67,15 +88,28 @@ void Producer::run()
         fp.read(reinterpret_cast<char*>(&msg_prod.bytes), sizeof(msg_prod.bytes)-1);
 
         cout << "\nP:msg_prod " << msg_prod.bytes << endl;
-        msg_prod.numb_bytes_read=fp.gcount();
+        msg_prod.numb_bytes_read = fp.gcount(); // set number of bytes read
+        msg_prod.no_of_blocks = no_of_blks--; // set block number
+        cout << "\nP:msg_prod.no_of_blocks " << msg_prod.no_of_blocks << endl;
         cout << "\nP:sizeof(msg_prod) " << sizeof(msg_prod) << endl;
-        int err = mq_send(queue_prod,reinterpret_cast<const char*>(&msg_prod),sizeof(msg_prod),0);
-        if (err < 0)
+        int err = mq_send(queue_prod, reinterpret_cast<const char*>(&msg_prod), sizeof(msg_prod),0);
+        if (err < 0) {
             cerr << "\nP:mq_send " << strerror(errno) << endl;
+            exit(1);
+        }
+        // Signal Processing thread
+        union sigval value;
+        value.sival_int = ID;
+        if (sigqueue(getpid(), SIGUSR1, value) != 0) {
+            cerr << "\nP:sigqueue " << strerror(errno) << endl;
+            exit(1);
+        }
 
         position+=fp.gcount();
         i+=fp.gcount();
     }
     mq_close(queue_prod);
     cout<<"\nP:Producer over"<<endl;
+    //while(1);
+    pthread_exit(NULL);
 }

@@ -1,6 +1,7 @@
 #ifndef PROCESSING_H
 #define PROCESSING_H
 
+#include <signal.h>
 #include <unistd.h>
 #include <stdint.h>
 #include <cstdio>
@@ -24,25 +25,26 @@
 
 using namespace std;
 
-struct buff_message_processing
-{
-    uint8_t bytes[65];
-    int numb_bytes_read;
-};
+static volatile int work = 0;
+static volatile int quit = 0;
 
 class Processing: public Pthrd
 {
 private:
+    static char src_queue_name[20];
+    static char dst_queue_name[20];
     mqd_t queue_prod_proc;
     mqd_t queue_cons_proc;
-    buff_message_processing msg_pross;
-    int msg_proc;
+    buff_message msg_pross;
+    //int msg_proc;
     struct mq_attr attr;
-    unsigned int sender;
+    //unsigned int sender;
+    //struct sigaction sigIntHandler;
+    sigset_t mask;
+    siginfo_t info;
 
 public:
     Processing();//Constructor
-    ~Processing();
     void run(void);// runnable function
 };
 

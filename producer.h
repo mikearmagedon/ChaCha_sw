@@ -1,6 +1,7 @@
 #ifndef PRODUCER_H
 #define PRODUCER_H
 
+#include <signal.h>
 #include <unistd.h>
 #include <stdint.h>
 #include <cstdio>
@@ -8,6 +9,7 @@
 #include "pthrd.h"
 #include <iostream>
 #include <cstring>
+#include <math.h>
 #include <vector>
 #include <fstream>
 #include <errno.h>
@@ -20,28 +22,25 @@
 
 using namespace std;
 
-struct buff_message
-{
-    uint8_t bytes[65];
-    int numb_bytes_read;
-};
-
 
 //Class of the thread Producer
 class Producer: public Pthrd
 {
 private:
+    int ID;
     const char * filename;
     mqd_t queue_prod;
     buff_message msg_prod;
     struct mq_attr attr;
+    char queue_name[20];
 public:
     Producer();//Constructor
     ~Producer();
+    void set_ID(int);
     void set_filename(const char *);
-    const char get_filename();
+    char get_filename();
     void run(void);// runnable function
-    int load_file(const char *path, buff_message &);
+    int load_file(const char *, buff_message &);
 };
 
 #endif // PRODUCER_H

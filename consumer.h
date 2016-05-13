@@ -1,6 +1,7 @@
 #ifndef CONSUMER_H
 #define CONSUMER_H
 
+#include <signal.h>
 #include <unistd.h>
 #include <stdint.h>
 #include <cstdio>
@@ -19,27 +20,23 @@
 
 using namespace std;
 
-struct buff_message_cons
-{
-    uint8_t bytes[65];
-    int numb_bytes_read;
-};
-
 class Consumer: public Pthrd
 {
 private:
     char * filename;
-    buff_message_cons msg_cons;
+    buff_message msg_cons;
     mqd_t queue_cons;
     int msg_con_int;
     struct mq_attr attr;
     unsigned int sender;
+    int ID;
+    char queue_name[20];
 public:
     Consumer();//Constructor
     ~Consumer();
+    void set_ID(int);
     void set_filename(char *);
     void run(void);
-    void save_file(char *, const buff_message_cons &);
 };
 
 #endif // CONSUMER_H
