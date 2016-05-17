@@ -9,7 +9,9 @@ Consumer::Consumer()
 
 Consumer::~Consumer()
 {
+#if DEBUG
     cout << "\nC:~Consumer" << endl;
+#endif
     if (mq_unlink(queue_name) == -1) {
         cerr << "\nC:mq_unlink" << strerror(errno) << endl;
         exit(1);
@@ -27,7 +29,7 @@ void Consumer::set_filename(char * filename) {
 void Consumer::run()
 {
     if (ID == -1) {
-        cout << "\nP:Invalid thread ID:" << ID << endl;
+        cerr << "\nP:Invalid thread ID:" << ID << endl;
         exit(1);
     }
 
@@ -56,39 +58,40 @@ void Consumer::run()
     char name[strlen(filename)+6];
     strcpy(name, filename);
     strcat(name, ".rslt");
+#if DEBUG
     cout << "\nC:name " << name << endl;
     cout << "\nC:ifstream " << ifstream(name) << endl;
-
+#endif
     if (ifstream(name)!=0) {
         cout << "\nC:Removing file ..." <<endl;
         remove(name);
     }
 
-    cout<<"\nC:Waiting to receive"<<endl;
-    do{
+    do {
+#if DEBUG
+        cout<<"\nC:Waiting to receive"<<endl;
+#endif
         msg_con_int = mq_receive(queue_cons, reinterpret_cast<char*>(&msg_cons),sizeof(msg_cons),&sender);
         if(msg_con_int == -1)
         {
             cerr << "\nC:Error Receiving Consumer " << strerror(errno) << endl;
             exit(1);
         }
+#if DEBUG
         cout << "\nC:blk_#:" << msg_cons.no_of_blocks << endl;
         cout << "\nC:msg_cons " << msg_cons.bytes << endl;
         cout << "\nC:Consumer Number of bytes: "<< sizeof(msg_cons.bytes)/sizeof(uint8_t)<<endl;
-
-
         cout << "\nC:saving " << msg_cons.numb_bytes_read << " bytes" << endl;
-        fp.open(name, ofstream::out | ios::binary | ofstream::app);
         cout << "\nC:Writing to file ..." << endl;
+#endif
+        fp.open(name, ofstream::out | ios::binary | ofstream::app);
+
         fp.write(reinterpret_cast<const char*>(&msg_cons.bytes[0]), msg_cons.numb_bytes_read);
         fp.close();
-        //#if DECRYPT
-        //    save_file("plain.txt",msg_cons);
-        //#else
-        //save_file(filename, msg_cons);
-        //#endif
     } while (--(msg_cons.no_of_blocks) > 0);
     mq_close(queue_cons);
+#if DEBUG
     cout << "\nC:Consumer Over" << endl;
+#endif
     pthread_exit(NULL);
 }

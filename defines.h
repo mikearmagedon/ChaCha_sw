@@ -1,7 +1,9 @@
 #ifndef DEFINES
 #define DEFINES
 
-#define DEBUG 0
+#define DEBUG 1
+
+#define RTSIGNAL_P (SIGRTMIN + 1)
 
 struct buff_message
 {

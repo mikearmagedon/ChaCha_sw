@@ -40,7 +40,6 @@ public:
     void set_filename(const char *);
     char get_filename();
     void run(void);// runnable function
-    int load_file(const char *, buff_message &);
 };
 
 #endif // PRODUCER_H

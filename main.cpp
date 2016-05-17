@@ -5,7 +5,9 @@
 
 int main(int argc, char *argv[])
 {
+    cout << "PID: " << getpid() << endl;
 #if DEBUG
+    cout << "PID: " << getpid() << endl;
     cout << "argc " << argc << endl;
     for (int i=0; i<argc; i++) {
         cout << "argv[" << i << "] " << argv[i] << endl;
@@ -24,41 +26,41 @@ int main(int argc, char *argv[])
         cout << "The # of threads provided must be between 1 and 10" << endl;
         exit(0);
     }
-    //Block signals SIGUSR1 and SIGINT for all threads
+    //Block signals RTSIGNAL_P and SIGINT for all threads
     sigset_t set;
     sigemptyset(&set);
-    sigaddset(&set, SIGUSR1);
+    sigaddset(&set, RTSIGNAL_P);
     sigaddset(&set, SIGINT);
     if (pthread_sigmask(SIG_BLOCK, &set, NULL) != 0) {
         cerr << "\nM:pthread_sigmask " << strerror(errno) << endl;
         exit(1);
     }
 
-    // Initialize set of producer and consumer threads
+    // Initialize and start set of producer and consumer threads
     Producer prod[atoi(argv[1])];
     Consumer cons[atoi(argv[1])];
     for (int i = 0; i < atoi(argv[1]); i++) {
         prod[i].set_filename(argv[i+2]);
         prod[i].set_ID(i);
+        if (prod[i].Start(1))
+        {
+            cerr << "\nM:Couldn't create" << endl;
+            exit (0);
+        }
         cons[i].set_filename(argv[i+2]);
         cons[i].set_ID(i);
+        if (cons[i].Start(1))
+        {
+            cerr << "\nM:Couldn't create" << endl;
+            exit (0);
+        }
     }
 
     //Initialize processing thread
     Processing proc;
 
-    //Start running threads
-    if(cons[0].Start(1))
-    {
-        cerr << "\nM:Couldn't create" << endl;
-        exit (0);
-    }
+    //Start running processing thread
     if(proc.Start(1))
-    {
-        cerr << "\nM:Couldn't create" << endl;
-        exit (0);
-    }
-    if(prod[0].Start(1))
     {
         cerr << "\nM:Couldn't create" << endl;
         exit (0);
@@ -68,9 +70,13 @@ int main(int argc, char *argv[])
     cout << "\nM:Waiting for threads to finish..." << endl;
     for (int i = 0; i < atoi(argv[1]); i++) {
         pthread_join(prod[i].pthread, 0);
+#if DEBUG
         cout << "\nM:Join prod[" << i << "]" << endl;
+#endif
         pthread_join(cons[i].pthread, 0);
+#if DEBUG
         cout << "\nM:Join cons[" << i << "]" << endl;
+#endif
     }
 
     //Join processing thread
