@@ -15,7 +15,7 @@ void Processing::run(){
     // Best password by consensus.
     uint8_t key[32] = {1, 2, 3, 4, 5, 6};
     // Really does not matter what this is, except that it is only used once.
-    uint8_t nonce[8] = {1, 2, 3, 4, 5, 6, 7, 8};
+    uint8_t nonce[12] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
     ChaCha20 chacha(key, nonce);
     int msg_proc;
 

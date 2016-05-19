@@ -1,6 +1,6 @@
 #include "chacha20.h"
 
-ChaCha20::ChaCha20(const uint8_t key[32], const uint8_t nonce[8], uint64_t counter)
+ChaCha20::ChaCha20(const uint8_t key[32], const uint8_t nonce[12], uint32_t counter)
 : block(key, nonce), position(64)
 {
     block.set_counter(counter);

@@ -8,8 +8,8 @@
 class Chacha20Block
 {
 public:
-    Chacha20Block(const uint8_t [32], const uint8_t [8]);
-    void set_counter(uint64_t);
+    Chacha20Block(const uint8_t [32], const uint8_t [12]);
+    void set_counter(uint32_t);
     void next(uint32_t [16]);
 private:
     uint32_t state[16];
