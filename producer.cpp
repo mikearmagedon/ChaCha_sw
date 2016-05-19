@@ -2,7 +2,7 @@
 
 Producer::Producer()
 {
-    this->attr.mq_maxmsg = 20; //max # of messages
+    this->attr.mq_maxmsg = 50; //max # of messages
     this->attr.mq_msgsize = sizeof(msg_prod); //Max size of message
     this->ID = -1;
     memset(&queue_name, 0, sizeof(queue_name));
@@ -10,7 +10,7 @@ Producer::Producer()
 
 Producer::~Producer()
 {
-#if DEBUG
+#if DEBUG_P_P
     cout << "\nP:~Producer" << endl;
 #endif
     if (mq_unlink(queue_name) == -1) {
@@ -33,10 +33,9 @@ char Producer::get_filename() {
 
 void Producer::run()
 {
-#if DEBUG
+#if DEBUG_P_P
     cout<<"\nP:Producer init"<<endl;
 #endif
-
     if (ID == -1) {
         cerr << "\nP:Invalid thread ID:" << ID << endl;
         exit(1);
@@ -77,7 +76,7 @@ void Producer::run()
     fp.seekg(0, fp.beg);
 
     int no_of_blks = ceil(n/64.0);
-#if DEBUG
+#if DEBUG_P
     cout << "\nP:no_of_blks " << no_of_blks << endl;
 #endif
 
@@ -87,12 +86,12 @@ void Producer::run()
             position = 0;
         }
         fp.read(reinterpret_cast<char*>(&msg_prod.bytes), sizeof(msg_prod.bytes)-1);
-#if DEBUG
+#if DEBUG_P
         cout << "\nP:msg_prod " << msg_prod.bytes << endl;
 #endif
         msg_prod.numb_bytes_read = fp.gcount(); // set number of bytes read
         msg_prod.no_of_blocks = no_of_blks--; // set block number
-#if DEBUG
+#if DEBUG_P
         cout << "\nP:msg_prod.no_of_blocks " << msg_prod.no_of_blocks << endl;
         cout << "\nP:sizeof(msg_prod.bytes) " << sizeof(msg_prod.bytes) << endl;
         cout << "\nP:msg_prod.numb_bytes_read " << msg_prod.numb_bytes_read << endl;
@@ -110,12 +109,11 @@ void Producer::run()
             cerr << "\nP:sigqueue " << strerror(errno) << endl;
             exit(1);
         }
-
         position+=fp.gcount();
         i+=fp.gcount();
     }
     mq_close(queue_prod);
-#if DEBUG
+#if DEBUG_P
     cout<<"\nP:Producer over"<<endl;
 #endif
     pthread_exit(NULL);

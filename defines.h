@@ -1,7 +1,10 @@
 #ifndef DEFINES
 #define DEFINES
 
-#define DEBUG 1
+#define DEBUG 0
+#define DEBUG_C 0
+#define DEBUG_P 0
+#define DEBUG_PRO 0
 
 #define RTSIGNAL_P (SIGRTMIN + 1)
 
