@@ -3,20 +3,16 @@
 char Processing::src_queue_name[20] = {0};
 char Processing::dst_queue_name[20] = {0};
 
-Processing::Processing()
+Processing::Processing(const uint8_t key[32], const uint8_t nonce[12])
+: chacha(key, nonce)
 {
-
 }
 
 void Processing::run(){
 #if DEBUG_PRO
     cout<<"\nPro:Processing init"<<endl;
 #endif
-    // Best password by consensus.
-    uint8_t key[32] = {1, 2, 3, 4, 5, 6};
-    // Really does not matter what this is, except that it is only used once.
-    uint8_t nonce[12] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
-    ChaCha20 chacha(key, nonce);
+
     int msg_proc;
 
     sigemptyset(&mask);

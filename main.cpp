@@ -57,7 +57,11 @@ int main(int argc, char *argv[])
     }
 
     //Initialize processing thread
-    Processing proc;
+    // Best password by consensus.
+    uint8_t key[32] = {1, 2, 3, 4, 5, 6};
+    // Really does not matter what this is, except that it is only used once.
+    uint8_t nonce[12] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
+    Processing proc(key, nonce);
 
     //Start running processing thread
     if(proc.Start(1))

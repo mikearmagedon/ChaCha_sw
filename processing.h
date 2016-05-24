@@ -36,15 +36,13 @@ private:
     mqd_t queue_prod_proc;
     mqd_t queue_cons_proc;
     buff_message msg_pross;
-    //int msg_proc;
     struct mq_attr attr;
-    //unsigned int sender;
-    //struct sigaction sigIntHandler;
     sigset_t mask;
     siginfo_t info;
+    ChaCha20 chacha;
 
 public:
-    Processing();//Constructor
+    Processing(const uint8_t [32], const uint8_t [12]);//Constructor
     void run(void);// runnable function
 };
 
