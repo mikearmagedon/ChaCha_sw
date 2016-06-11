@@ -28,7 +28,6 @@ private:
     mqd_t queue_cons;
     int msg_con_int;
     struct mq_attr attr;
-    unsigned int sender;
     int ID;
     char queue_name[20];
 public:

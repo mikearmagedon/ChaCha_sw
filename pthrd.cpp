@@ -5,8 +5,6 @@ Pthrd::Pthrd()
 
 }
 
-
-
 void Pthrd::CheckFail(int status)
 {
     if(status)
@@ -25,7 +23,6 @@ void Pthrd::CheckFail(int status)
     }
 }
 
-
 int Pthrd::Start(int prio, bool detach)
 {
     pthread_attr_init(&thread_attr);
@@ -36,7 +33,7 @@ int Pthrd::Start(int prio, bool detach)
 
     int rtn = pthread_create(&pthread,&thread_attr,Pthrd_Func,static_cast<void*>(this));
 
-    std::cout << "\nPriority: " << thread_param.__sched_priority << std::endl;
+    //std::cout << "\nPriority: " << thread_param.__sched_priority << std::endl;
     CheckFail(rtn);
     if (detach)
         pthread_detach(pthread);
@@ -46,7 +43,6 @@ int Pthrd::Start(int prio, bool detach)
 
 void Pthrd::SetupThread(int prio, pthread_attr_t *pthread_attr, struct sched_param * pthread_param)
 {
-
     //    int rr_min_priority, rr_max_priority;
 
     //    //Step 2: Retirve max and min priority
@@ -59,20 +55,17 @@ void Pthrd::SetupThread(int prio, pthread_attr_t *pthread_attr, struct sched_par
     pthread_param-> sched_priority = prio;
 
     //Step 4: set scheduling policy
-    pthread_attr_setschedpolicy (pthread_attr,SCHED_RR);
+    pthread_attr_setschedpolicy (pthread_attr, SCHEDULER);
 
     //Step 5: set scheduling param
     pthread_attr_setschedparam(pthread_attr,pthread_param);
 
     //Step 6: set scheduling attributes to be determined by attributes object
-    pthread_attr_setinheritsched(pthread_attr, PTHREAD_EXPLICIT_SCHED);
-
-
+    pthread_attr_setinheritsched(pthread_attr, INHERITSCHED);
 }
 
 void* Pthrd::Pthrd_Func(void *p)
 {
-
     Pthrd *pthrd = static_cast<Pthrd*>(p);
     pthrd->run();
     return 0;

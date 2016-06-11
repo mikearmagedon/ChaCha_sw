@@ -2,7 +2,9 @@
 
 Producer::Producer()
 {
-    this->attr.mq_maxmsg = 50; //max # of messages
+    this->queue_prod = -1;
+    this->filename = NULL;
+    this->attr.mq_maxmsg = QUEUE_SIZE; //max # of messages
     this->attr.mq_msgsize = sizeof(msg_prod); //Max size of message
     this->ID = -1;
     memset(&queue_name, 0, sizeof(queue_name));
@@ -10,7 +12,7 @@ Producer::Producer()
 
 Producer::~Producer()
 {
-#if DEBUG_P_P
+#if DEBUG_P
     cout << "\nP:~Producer" << endl;
 #endif
     if (mq_unlink(queue_name) == -1) {
@@ -33,7 +35,7 @@ char Producer::get_filename() {
 
 void Producer::run()
 {
-#if DEBUG_P_P
+#if DEBUG_P
     cout<<"\nP:Producer init"<<endl;
 #endif
     if (ID == -1) {

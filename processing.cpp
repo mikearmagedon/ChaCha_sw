@@ -18,7 +18,6 @@ void Processing::run(){
     sigemptyset(&mask);
     sigaddset(&mask, RTSIGNAL_P);
     sigaddset(&mask, SIGINT);
-    //sigprocmask(SIG_SETMASK, &mask, NULL);
 
     while(!quit) {
         int sig = sigwaitinfo(&mask, &info);

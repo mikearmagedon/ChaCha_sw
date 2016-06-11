@@ -1,11 +1,9 @@
-#include <QCoreApplication>
 #include "producer.h"
 #include "consumer.h"
 #include "processing.h"
 
 int main(int argc, char *argv[])
 {
-    cout << "PID: " << getpid() << endl;
 #if DEBUG
     cout << "PID: " << getpid() << endl;
     cout << "argc " << argc << endl;
@@ -13,19 +11,6 @@ int main(int argc, char *argv[])
         cout << "argv[" << i << "] " << argv[i] << endl;
     }
 #endif
-    if (argc == 1) {
-        cout << "Too few arguments" << endl;
-        cout << "Usage: Case_Study #_of_threads filenames" << endl;
-        exit(0);
-    }
-    else if (atoi(argv[1]) != argc-2) { //Check input arguments
-        cout << "The # of files provided doesn't match with the # of threads" << endl;
-        exit(0);
-    }
-    else if (atoi(argv[1]) <= 0 || atoi(argv[1]) > 10) {
-        cout << "The # of threads provided must be between 1 and 10" << endl;
-        exit(0);
-    }
     //Block signals RTSIGNAL_P and SIGINT for all threads
     sigset_t set;
     sigemptyset(&set);
@@ -37,30 +22,31 @@ int main(int argc, char *argv[])
     }
 
     // Initialize and start set of producer and consumer threads
-    Producer prod[atoi(argv[1])];
-    Consumer cons[atoi(argv[1])];
-    for (int i = 0; i < atoi(argv[1]); i++) {
-        prod[i].set_filename(argv[i+2]);
+    Producer prod[NO_OF_THREADS];
+    Consumer cons[NO_OF_THREADS];
+    char file_name[20];
+    for (int i = 0; i < NO_OF_THREADS; i++) {
+        sprintf(file_name, "file%d", i);
+        prod[i].set_filename(file_name);
         prod[i].set_ID(i);
-        if (prod[i].Start(1))
+        if (prod[i].Start(PRIORITY))
         {
             cerr << "\nM:Couldn't create" << endl;
             exit (0);
         }
-        cons[i].set_filename(argv[i+2]);
+        cons[i].set_filename(file_name);
         cons[i].set_ID(i);
-        if (cons[i].Start(1))
+        if (cons[i].Start(PRIORITY))
         {
             cerr << "\nM:Couldn't create" << endl;
             exit (0);
         }
     }
-
     //Initialize processing thread
     // Best password by consensus.
-    uint8_t key[32] = {1, 2, 3, 4, 5, 6};
+    uint8_t key[32] = {KEY};
     // Really does not matter what this is, except that it is only used once.
-    uint8_t nonce[12] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
+    uint8_t nonce[12] = {NONCE};
     Processing proc(key, nonce);
 
     //Start running processing thread
@@ -71,8 +57,10 @@ int main(int argc, char *argv[])
     }
 
     //Join set of producer and consumer threads
+#if DEBUG
     cout << "\nM:Waiting for threads to finish..." << endl;
-    for (int i = 0; i < atoi(argv[1]); i++) {
+#endif
+    for (int i = 0; i < NO_OF_THREADS; i++) {
         pthread_join(prod[i].pthread, 0);
 #if DEBUG
         cout << "\nM:Join prod[" << i << "]" << endl;
@@ -84,15 +72,19 @@ int main(int argc, char *argv[])
     }
 
     //Join processing thread
+#if DEBUG
     cout << "\nM:Waiting for processing thread to finish..." << endl;
+#endif
     pthread_join(proc.pthread, 0);
 
     //Clean-up
-    for (int i = 0; i < atoi(argv[1]); i++) {
+    for (int i = 0; i < NO_OF_THREADS; i++) {
         prod[i].~Producer();
         cons[i].~Consumer();
     }
+#if DEBUG
     cout << "\nM:Exiting..." << endl;
+#endif
     exit(0);
 }
 

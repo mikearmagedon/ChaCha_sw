@@ -8,6 +8,7 @@
 #include <cstdlib>
 #include <pthread.h>
 #include <errno.h>
+#include "defines.h"
 
 class Pthrd
 {
